@@ -1,0 +1,6 @@
+INSERT INTO Award VALUES(seq_per_award.NEXTVAL,'Oscar','Film');
+INSERT INTO Award VALUES(seq_per_award.NEXTVAL,'Oscar','Cast');
+INSERT INTO Award VALUES(seq_per_award.NEXTVAL,'Golden Globes','Film');
+INSERT INTO Award VALUES(seq_per_award.NEXTVAL,'Golden Globes','Cast');
+INSERT INTO Award VALUES(seq_per_award.NEXTVAL,'Grammy','Cast');
+INSERT INTO Award VALUES(seq_per_award.NEXTVAL,'Grammy','Film');

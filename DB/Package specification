@@ -1,0 +1,11 @@
+CREATE OR REPLACE PACKAGE  MoviePackage IS
+
+PROCEDURE  SearchFilmByCast(name IN   varchar,surname IN  varchar);
+PROCEDURE  SearchFilmByTitolo(title IN   varchar);
+PROCEDURE  SearchFilmByGenere(genre IN   varchar);
+PROCEDURE SearchAwardedFilmsByYear( year_ IN NUMBER );
+PROCEDURE OrderFilmByDate;
+PROCEDURE VisualizzaRecensioniFilm(Title IN VARCHAR);
+PROCEDURE VisualizzaClassifica;
+
+END MoviePackage;

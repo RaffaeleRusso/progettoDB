@@ -1,0 +1,67 @@
+CREATE OR REPLACE  TRIGGER AggiornaClassifica
+BEFORE INSERT ON Recensioni
+FOR EACH ROW
+DECLARE
+title VARCHAR(50) ;
+review NUMBER;
+val NUMBER;
+BEGIN
+
+SELECT F.titolo INTO title
+FROM  Film F
+WHERE :NEW.Film=F.Id_Film;
+
+SELECT COUNT(R.Film) INTO review
+FROM Recensioni R JOIN Film F
+ON F.ID_Film=R.Film
+WHERE F.Titolo=title;
+
+review:=review+1;
+
+SELECT SUM(CAST(R.Stelle AS FLOAT )) INTO val
+    FROM Recensioni R JOIN Film F
+    ON F.ID_Film=R.Film
+    WHERE F.Titolo=title;
+
+val:= (val +:NEW.Stelle)/review;
+
+
+IF(review =5) THEN
+      INSERT INTO Classifica VALUES(:NEW.Film,val,review);
+ELSIF(review>5) THEN
+UPDATE Classifica
+SET    NumeroRecensioni=NumeroRecensioni+1 ,Valutazione=val
+WHERE Film=:NEW.Film;
+END IF;
+END ;
+
+
+-------------------------------------------------------------------------------
+
+
+
+CREATE OR REPLACE TRIGGER checkProduzioni
+BEFORE INSERT ON Produzioni
+FOR EACH ROW
+DECLARE
+InvalidProduction EXCEPTION ;
+AnnoProd NUMBER:=0;
+AnnoRil NUMBER:=0;
+BEGIN
+SELECT S.AnnoFondazione INTO AnnoProd
+FROM  Studio S
+WHERE :NEW.Studio=S.ID_Studio;
+
+ AnnoRil:= :NEW.AnnoRilascio ;
+
+
+IF (AnnoRil < AnnoProd)
+THEN RAISE InvalidProduction;
+END IF;
+
+
+
+EXCEPTION
+WHEN InvalidProduction
+THEN RAISE_APPLICATION_ERROR(-20001,'Inserimento in produzioni non valido');
+END;

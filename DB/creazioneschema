@@ -1,0 +1,208 @@
+CREATE TABLE Cast(
+    ID_Cast NUMBER,
+    CONSTRAINT pk_cast PRIMARY KEY(ID_Cast)
+    );
+
+CREATE SEQUENCE seq_per_cast
+    START WITH 1
+    MAXVALUE 1000
+    NOCACHE;
+
+CREATE TABLE Persone(
+    ID_Persona NUMBER,
+    Nome VARCHAR(20) NOT NULL,
+    Cognome VARCHAR(20) NOT NULL,
+    DataNascita DATE,
+    PaeseNascita VARCHAR(15),
+    Tipo VARCHAR(10) NOT NULL,
+    CONSTRAINT pk_persona PRIMARY KEY(ID_Persona),
+    CONSTRAINT TipoInvalido CHECK(Tipo in ('Attore','Regista')),
+    CONSTRAINT DataNascitaInvalida CHECK(DataNascita < '1-JAN-2020')
+
+    );
+
+CREATE SEQUENCE seq_per_persone
+    START WITH 1001
+    MAXVALUE 6000
+    NOCACHE;
+
+
+
+
+CREATE TABLE Contratti(
+    Persona  NUMBER ,
+    Cast NUMBER,
+    CONSTRAINT pk_contratti PRIMARY KEY(Persona,Cast)
+    );
+
+
+CREATE TABLE Film(
+    ID_Film NUMBER,
+    Titolo VARCHAR(50) NOT NULL,
+    Durata NUMBER,
+    Cast NUMBER,
+    CONSTRAINT DurataValida CHECK(Durata > 0),
+    CONSTRAINT pk_film PRIMARY KEY(ID_Film)
+    );
+
+ CREATE SEQUENCE seq_per_film
+    START WITH 10001
+    MAXVALUE 11000
+    NOCACHE;
+
+
+
+
+CREATE TABLE Studio(
+    ID_Studio NUMBER,
+    Nome VARCHAR(20) NOT NULL,
+    AnnoFondazione NUMBER,
+    Sede VARCHAR(20) ,
+    CONSTRAINT pk_studio PRIMARY KEY(ID_Studio),
+    CONSTRAINT AnnoFondazioneInvalida CHECK( AnnoFondazione < 2020)
+    );
+
+CREATE SEQUENCE seq_per_studio
+    START WITH 8001
+    MAXVALUE 8040
+    NOCACHE;
+
+CREATE TABLE Produzioni(
+    Film NUMBER,
+    Studio NUMBER,
+    AnnoRilascio NUMBER NOT NULL,
+    CONSTRAINT pk_produzioni PRIMARY KEY(Film,Studio)
+    );
+
+
+CREATE TABLE Award(
+    ID_Award NUMBER,
+    Nome VARCHAR(20) NOT NULL,
+    Categoria VARCHAR(15) NOT NULL,
+    CONSTRAINT pk_award PRIMARY KEY(Id_Award),
+    CONSTRAINT CategoriaInvalida CHECK( Categoria IN('Film', 'Cast''))
+);
+
+CREATE SEQUENCE seq_per_award
+    START WITH 9001
+    MAXVALUE 9011
+    NOCACHE;
+
+CREATE TABLE Riconoscimenti(
+    Film NUMBER,
+    Cast NUMBER,
+    Award NUMBER,
+    Anno NUMBER NOT NULL,
+    CONSTRAINT AnnoValido  CHECK (Anno <2020)
+
+);
+
+
+
+CREATE TABLE Generi(
+    Nome VARCHAR(15) ,
+    CONSTRAINT pk_genere PRIMARY KEY(Nome)
+    );
+
+
+
+CREATE TABLE Appartenenze(
+    Film NUMBER,
+    Genere VARCHAR(15),
+    CONSTRAINT pk_appartenenze PRIMARY KEY(Film,Genere)
+);
+
+
+
+CREATE TABLE Utenti(
+    ID_Utente VARCHAR(15),
+    Nome VARCHAR(20) NOT NULL,
+    Cognome VARCHAR(20) NOT NULL,
+    Email VARCHAR(50) UNIQUE NOT NULL,
+    Password VARCHAR(20) NOT NULL,
+    DataRegistrazione DATE NOT NULL,
+    CONSTRAINT pk_utente PRIMARY KEY(ID_Utente),
+    CONSTRAINT PasswordLength CHECK( LENGTH(Password) > 7),
+    CONSTRAINT VALIDA_MAIL CHECK (Email LIKE '%_@__%.__%' ),
+    CONSTRAINT  UtenteCheck CHECK (LENGTH(ID_Utente)>5)
+);
+
+
+
+CREATE SEQUENCE seq_per_utenti
+    START WITH 10000
+    MAXVALUE 20000
+    NOCACHE;
+
+
+CREATE TABLE Recensioni(
+    Film NUMBER,
+    Utente VARCHAR(15),
+    Stelle NUMBERStelle NOT NULL,
+    Commento VARCHAR(200),
+    CONSTRAINT pk_recensioni PRIMARY KEY(Film,Utente),
+    CONSTRAINT StelleInvalide CHECK( Stelle BETWEEN 1 AND 5)
+    );
+
+
+CREATE TABLE Classifica(
+    Film NUMBER,
+    Valutazione NUMBER(2,1),
+    NumeroRecensioni INT .0
+    CONSTRAINT pk_classifica PRIMARY KEY(Film)
+    );
+
+
+
+
+
+
+
+
+ALTER TABLE Film ADD CONSTRAINT fk_film_cast
+FOREIGN KEY(Cast) REFERENCES Cast(ID_Cast)
+ON DELETE CASCADE;
+
+ALTER TABLE Contratti ADD CONSTRAINT fk_contratti_persone
+FOREIGN KEY(Persona) REFERENCES Persone(ID_Persona)
+ON DELETE CASCADE ;
+
+ALTER TABLE Contratti ADD CONSTRAINT fk_contratti_cast
+FOREIGN KEY(Cast) REFERENCES Cast(ID_Cast)
+ON DELETE CASCADE;
+
+ALTER TABLE Riconoscimenti ADD CONSTRAINT fk_riconoscimenti_film
+FOREIGN KEY(Film) REFERENCES Film(ID_Film)
+ON DELETE CASCADE;
+
+ALTER TABLE Riconoscimenti ADD CONSTRAINT fk_riconoscimenti_award
+FOREIGN KEY(Award) REFERENCES Award(ID_Award)
+ON DELETE CASCADE;
+
+ALTER TABLE Riconoscimenti ADD CONSTRAINT fk_riconoscimenti_cast
+FOREIGN KEY(Cast) REFERENCES Cast(ID_Cast)
+ON DELETE CASCADE;
+
+ALTER TABLE Produzioni ADD CONSTRAINT fk_produzioni_film
+FOREIGN KEY(Film) REFERENCES Film(ID_Film)
+ON DELETE CASCADE;
+
+ALTER TABLE Produzioni ADD CONSTRAINT fk_produzioni_studio
+FOREIGN KEY(Studio) REFERENCES Studio(ID_Studio)
+ON DELETE CASCADE;
+
+ALTER TABLE Appartenenze ADD CONSTRAINT fk_appartenenze_film
+FOREIGN KEY(Film) REFERENCES Film(ID_Film)
+ON DELETE CASCADE;
+
+ALTER TABLE Appartenenze ADD CONSTRAINT fk_appartenenze_generi
+FOREIGN KEY(Genere) REFERENCES Generi(Nome)
+ON DELETE CASCADE;
+
+ALTER TABLE Recensioni ADD CONSTRAINT fk_recensioni_film
+FOREIGN KEY(Film) REFERENCES Film(ID_Film)
+ON DELETE CASCADE;
+
+ALTER TABLE Recensioni ADD CONSTRAINT fk_recensioni_utenti
+FOREIGN KEY(Utente) REFERENCES Utenti(ID_Utente)
+ON DELETE CASCADE;

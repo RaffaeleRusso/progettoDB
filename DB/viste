@@ -1,0 +1,32 @@
+CREATE VIEW VistaGeneriFilm AS
+SELECT F.Titolo ,G.Nome
+FROM Film F JOIN (
+Appartenenze A JOIN Generi G
+ON A.Genere=G.Nome)
+ON F.ID_Film=A.Film;
+
+
+CREATE VIEW VistaUtenti AS
+SELECT ID_Utente AS Nickname,Email
+from Utenti;
+
+
+CREATE VIEW VistaProduzioni AS
+SELECT F.Titolo,S.Nome
+FROM Film F JOIN(
+  Produzioni P JOIN Studio S
+  ON S.ID_Studio=P.Studio
+) ON F.ID_Film=P.Film;
+
+
+CREATE OR REPLACE VIEW VistaRecensioni AS
+SELECT F.Titolo,R.Utente,R.Commento,R.Stelle
+FROM Recensioni R JOIN Film F
+ON F.ID_Film=R.Film
+ORDER BY F.Titolo,R.Stelle DESC;
+
+
+CREATE  VIEW VistaRiconoscimenti AS
+SELECT   F.Titolo ,A.Nome,A.Categoria
+FROM     Riconoscimenti R,Film F,Award A
+WHERE F.ID_Film=R.Film AND A.ID_Award=R.Award;

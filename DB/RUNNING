@@ -1,0 +1,736 @@
+CREATE TABLE Cast(
+    ID_Cast NUMBER,
+    CONSTRAINT pk_cast PRIMARY KEY(ID_Cast)
+    );
+
+CREATE SEQUENCE seq_per_cast
+    START WITH 1
+    MAXVALUE 1000
+    NOCACHE;
+
+CREATE TABLE Persone(
+    ID_Persona NUMBER,
+    Nome VARCHAR(20) NOT NULL,
+    Cognome VARCHAR(20) NOT NULL,
+    DataNascita DATE,
+    PaeseNascita VARCHAR(15),
+    Tipo VARCHAR(10) NOT NULL,
+    CONSTRAINT pk_persona PRIMARY KEY(ID_Persona),
+    CONSTRAINT TipoInvalido CHECK(Tipo in ('Attore','Regista')),
+    CONSTRAINT DataNascitaInvalida CHECK(DataNascita < '1-JAN-2020')
+
+    );
+
+CREATE SEQUENCE seq_per_persone
+    START WITH 1001
+    MAXVALUE 6000
+    NOCACHE;
+
+
+
+
+CREATE TABLE Contratti(
+    Persona  NUMBER ,
+    Cast NUMBER,
+    CONSTRAINT pk_contratti PRIMARY KEY(Persona,Cast)
+    );
+
+
+CREATE TABLE Film(
+    ID_Film NUMBER,
+    Titolo VARCHAR(50) NOT NULL,
+    Durata NUMBER,
+    Cast NUMBER,
+    CONSTRAINT DurataValida CHECK(Durata > 0),
+    CONSTRAINT pk_film PRIMARY KEY(ID_Film)
+    );
+
+ CREATE SEQUENCE seq_per_film
+    START WITH 10001
+    MAXVALUE 11000
+    NOCACHE;
+
+
+
+
+CREATE TABLE Studio(
+    ID_Studio NUMBER,
+    Nome VARCHAR(20) NOT NULL,
+    AnnoFondazione Number,
+    Sede VARCHAR(20) DEFAULT 'Unknown',
+    CONSTRAINT pk_studio PRIMARY KEY(ID_Studio),
+    CONSTRAINT AnnoFondazioneInvalida CHECK( AnnoFondazione <2020)
+    );
+
+CREATE SEQUENCE seq_per_studio
+    START WITH 8001
+    MAXVALUE 8040
+    NOCACHE;
+
+CREATE TABLE Produzioni(
+    Film NUMBER,
+    Studio NUMBER,
+    AnnoRilascio NUMBER NOT NULL,
+    CONSTRAINT pk_produzioni PRIMARY KEY(Film,Studio)
+    );
+
+    CREATE VIEW VistaProduzioni AS
+    SELECT F.Titolo,S.Nome
+    FROM Film F JOIN(
+      Produzioni P JOIN Studio S
+      ON S.ID_Studio=P.Studio
+    ) ON F.ID_Film=P.Film;
+
+CREATE TABLE Award(
+    ID_Award NUMBER,
+    Nome VARCHAR(20) NOT NULL,
+    Categoria VARCHAR(15) NOT NULL,
+    CONSTRAINT pk_award PRIMARY KEY(Id_Award),
+    CONSTRAINT CategoriaInvalida CHECK( Categoria IN('Film', 'Cast'))
+);
+
+CREATE SEQUENCE seq_per_award
+    START WITH 9001
+    MAXVALUE 9011
+    NOCACHE;
+
+CREATE TABLE Riconoscimenti(
+    Film NUMBER,
+    Cast NUMBER,
+    Award NUMBER,
+    Anno NUMBER NOT NULL,
+    CONSTRAINT AnnoValido  CHECK (Anno <2020)
+
+);
+
+CREATE  VIEW VistaRiconoscimenti AS
+SELECT   F.Titolo ,A.Nome,A.Categoria
+FROM Riconoscimenti R,Film F,Award A
+WHERE F.ID_Film=R.Film AND A.ID_Award=R.Award;
+
+
+
+CREATE TABLE Generi(
+    Nome VARCHAR(15) ,
+    CONSTRAINT pk_genere PRIMARY KEY(Nome)
+    );
+
+
+
+CREATE TABLE Appartenenze(
+    Film NUMBER,
+    Genere VARCHAR(15),
+    CONSTRAINT pk_appartenenze PRIMARY KEY(Film,Genere)
+);
+
+CREATE VIEW VistaGeneriFilm AS
+SELECT F.Titolo ,G.Nome
+FROM Film F JOIN (
+Appartenenze A JOIN Generi G
+ON A.Genere=G.Nome)
+ON F.ID_Film=A.Film;
+
+
+
+CREATE TABLE Utenti(
+    ID_Utente VARCHAR(15),
+    Nome VARCHAR(20) NOT NULL,
+    Cognome VARCHAR(20) NOT NULL,
+    Email VARCHAR(50) UNIQUE NOT NULL,
+    Password VARCHAR(20) NOT NULL,
+    DataRegistrazione DATE NOT NULL,
+    CONSTRAINT pk_utente PRIMARY KEY(ID_Utente),
+    CONSTRAINT PasswordLength CHECK( LENGTH(Password) > 7),
+    CONSTRAINT VALIDA_MAIL CHECK (Email LIKE '%_@__%.__%' ),
+    CONSTRAINT  UtenteCheck CHECK (LENGTH(ID_Utente)>5)
+);
+
+CREATE VIEW VistaUtenti AS
+SELECT ID_Utente AS Nickname,Email
+from Utenti;
+
+CREATE SEQUENCE seq_per_utenti
+    START WITH 10000
+    MAXVALUE 20000
+    NOCACHE;
+
+
+CREATE TABLE Recensioni(
+    Film NUMBER,
+    Utente VARCHAR(15),
+    Stelle INT NOT NULL,
+    Commento VARCHAR(200),
+    CONSTRAINT pk_recensioni PRIMARY KEY(Film,Utente),
+    CONSTRAINT StelleInvalide CHECK( Stelle BETWEEN 1 AND 5)
+    );
+
+
+CREATE OR REPLACE VIEW VistaRecensioni AS
+SELECT F.Titolo,R.Utente,R.Commento,R.Stelle
+FROM Recensioni R JOIN Film F
+ON F.ID_Film=R.Film
+ORDER BY F.Titolo,R.Stelle DESC;
+
+CREATE TABLE Classifica(
+    Film NUMBER,
+    Valutazione NUMBER(2,1),
+    NumeroRecensioni INT ,
+    CONSTRAINT pk_classifica PRIMARY KEY(Film)
+    );
+
+
+ALTER TABLE Film ADD CONSTRAINT fk_film_cast
+FOREIGN KEY(Cast) REFERENCES Cast(ID_Cast)
+ON DELETE CASCADE;
+
+ALTER TABLE Contratti ADD CONSTRAINT fk_contratti_persone
+FOREIGN KEY(Persona) REFERENCES Persone(ID_Persona)
+ON DELETE CASCADE ;
+
+ALTER TABLE Contratti ADD CONSTRAINT fk_contratti_cast
+FOREIGN KEY(Cast) REFERENCES Cast(ID_Cast)
+ON DELETE CASCADE;
+
+ALTER TABLE Riconoscimenti ADD CONSTRAINT fk_riconoscimenti_film
+FOREIGN KEY(Film) REFERENCES Film(ID_Film)
+ON DELETE CASCADE;
+
+ALTER TABLE Riconoscimenti ADD CONSTRAINT fk_riconoscimenti_award
+FOREIGN KEY(Award) REFERENCES Award(ID_Award)
+ON DELETE CASCADE;
+
+ALTER TABLE Riconoscimenti ADD CONSTRAINT fk_riconoscimenti_cast
+FOREIGN KEY(Cast) REFERENCES Cast(ID_Cast)
+ON DELETE CASCADE;
+
+ALTER TABLE Produzioni ADD CONSTRAINT fk_produzioni_film
+FOREIGN KEY(Film) REFERENCES Film(ID_Film)
+ON DELETE CASCADE;
+
+ALTER TABLE Produzioni ADD CONSTRAINT fk_produzioni_studio
+FOREIGN KEY(Studio) REFERENCES Studio(ID_Studio)
+ON DELETE CASCADE;
+
+ALTER TABLE Appartenenze ADD CONSTRAINT fk_appartenenze_film
+FOREIGN KEY(Film) REFERENCES Film(ID_Film)
+ON DELETE CASCADE;
+
+ALTER TABLE Appartenenze ADD CONSTRAINT fk_appartenenze_generi
+FOREIGN KEY(Genere) REFERENCES Generi(Nome)
+ON DELETE CASCADE;
+
+ALTER TABLE Recensioni ADD CONSTRAINT fk_recensioni_film
+FOREIGN KEY(Film) REFERENCES Film(ID_Film)
+ON DELETE CASCADE;
+
+ALTER TABLE Recensioni ADD CONSTRAINT fk_recensioni_utenti
+FOREIGN KEY(Utente) REFERENCES Utenti(ID_Utente)
+ON DELETE CASCADE;
+
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Frank','Darabont','28-JAN-1959','Francia','Regista');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Tim','Robbins','16-OCT-1958','USA','Attore');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Morgan','Freeman','1-JUN-1937','USA','Attore');
+
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Francis','Ford Coppola','7-APR-1939','USA','Regista');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Marlon','Brando','3-APR-1924','USA','Attore');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'AL','Pacino','25-APR-1940','USA','Attore');
+
+
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Robert','De Niro','17-AUG-1943','USA','Attore');
+
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Robert','Duvall','5-JAN-1931','USA','Attore');
+
+
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Christopher','Nolan','30-JUL-1970','UK','Regista');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Christian','Bale','30-JAN-1974','UK','Attore');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Heath','Ledger','4-APR-1979','Australia','Attore');
+
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Sidney','Lumet','25-JUN-1924','USA','Regista');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Henry','Fonda','16-MAY-1905','USA','Attore');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Martin','Balsam','4-NOV-1919','Australia','Attore');
+
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Steven','Spielberg','18-DEC-1946','USA','Regista');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Liam','Neeson','7-JAN-1952','UK','Attore');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Ralph','Fiennes','22-DEC-1962','UK','Attore');
+
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Peter','Jackson','31-OCT-1961','Nuova Zelanda','Regista');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Elijah','Wood','28-JAN-1981','USA','Attore');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Viggo','Mortensen','20-OCT-1958','USA','Attore');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Ian','McKellen','25-MAR-1939','UK','Attore');
+
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Quentin','Tarantino','27-MAR-1963','USA','Regista');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'John','Travolta','18-FEB-1954','USA','Attore');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Uma','Thurman','29-APR-1970','USA','Attore');
+
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Sergio','Leone','3-JAN-1929','Italia','Regista');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Clint','Eastwood','31-MAR-1930','USA','Attore');
+
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'David','Fincher','28-AUG-1962','USA','Regista');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Brad','Pitt','18-DEC-1963','USA','Attore');
+
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Robert','Zemeckis','14-MAY-1951','USA','Regista');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Tom','Hanks','9-JUL-1956','USA','Attore');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Robin','Wright','8-APR-1966','USA','Attore');
+
+
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Leonardo','DiCaprio','11-NOV-1974','UK','Attore');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Joseph','Gordon','17-FEB-1981','Australia','Attore');
+
+
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Irvin','Kershner','29-APR-1923','Nuova Zelanda','Regista');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Mark','Hamil','25-SEP-1951','USA','Attore');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Harrison','Ford','13-JUL-1942','USA','Attore');
+
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Lana','Wachowski','21-JUN-1965','Nuova Zelanda','Regista');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Keanu','Reeves','2-SEP-1964','Libano','Attore');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Laurence','Fishburne','30-JUL-1961','USA','Attore');
+
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Martin','Scorsese','17-NOV-1942','USA','Regista');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Ray','Liotta','18-DEC-1954','USA','Attore');
+
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Milos','Forman','18-FEB-1932','Repubblica Ceca','Regista');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Jack','Nicholson','22-APR-1937','USA','Attore');
+
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Akira','Kurosawa','23-MAR-1910','Giappone','Regista');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Takashi','Shimura','12-MAR-1905','Giappone','Attore');
+
+INSERT INTO CAST VALUES(seq_per_cast.NEXTVAL);
+INSERT INTO CAST VALUES(seq_per_cast.NEXTVAL);
+INSERT INTO CAST VALUES(seq_per_cast.NEXTVAL);
+INSERT INTO CAST VALUES(seq_per_cast.NEXTVAL);
+INSERT INTO CAST VALUES(seq_per_cast.NEXTVAL);
+INSERT INTO CAST VALUES(seq_per_cast.NEXTVAL);
+INSERT INTO CAST VALUES(seq_per_cast.NEXTVAL);
+INSERT INTO CAST VALUES(seq_per_cast.NEXTVAL);
+INSERT INTO CAST VALUES(seq_per_cast.NEXTVAL);
+INSERT INTO CAST VALUES(seq_per_cast.NEXTVAL);
+INSERT INTO CAST VALUES(seq_per_cast.NEXTVAL);
+INSERT INTO CAST VALUES(seq_per_cast.NEXTVAL);
+INSERT INTO CAST VALUES(seq_per_cast.NEXTVAL);
+INSERT INTO CAST VALUES(seq_per_cast.NEXTVAL);
+INSERT INTO CAST VALUES(seq_per_cast.NEXTVAL);
+INSERT INTO CAST VALUES(seq_per_cast.NEXTVAL);
+INSERT INTO CAST VALUES(seq_per_cast.NEXTVAL);
+INSERT INTO CAST VALUES(seq_per_cast.NEXTVAL);
+INSERT INTO CAST VALUES(seq_per_cast.NEXTVAL);
+INSERT INTO CAST VALUES(seq_per_cast.NEXTVAL);
+
+
+INSERT INTO Contratti VALUES(1001,1);
+INSERT INTO Contratti VALUES(1002,1);
+INSERT INTO Contratti VALUES(1003,1);
+
+INSERT INTO Contratti VALUES(1004,2);
+INSERT INTO Contratti VALUES(1005,2);
+INSERT INTO Contratti VALUES(1006,2);
+
+INSERT INTO Contratti VALUES(1004,3);
+INSERT INTO Contratti VALUES(1007,3);
+INSERT INTO Contratti VALUES(1006,3);
+INSERT INTO Contratti VALUES(1008,3);
+
+INSERT INTO Contratti VALUES(1009,4);
+INSERT INTO Contratti VALUES(1010,4);
+INSERT INTO Contratti VALUES(1011,4);
+
+INSERT INTO Contratti VALUES(1012,5);
+INSERT INTO Contratti VALUES(1013,5);
+INSERT INTO Contratti VALUES(1014,5);
+
+INSERT INTO Contratti VALUES(1015,6);
+INSERT INTO Contratti VALUES(1016,6);
+INSERT INTO Contratti VALUES(1017,6);
+
+INSERT INTO Contratti VALUES(1018,7);
+INSERT INTO Contratti VALUES(1019,7);
+INSERT INTO Contratti VALUES(1020,7);
+INSERT INTO Contratti VALUES(1021,7);
+
+INSERT INTO Contratti VALUES(1022,8);
+INSERT INTO Contratti VALUES(1023,8);
+INSERT INTO Contratti VALUES(1024,8);
+
+INSERT INTO Contratti VALUES(1025,9);
+INSERT INTO Contratti VALUES(1026,9);
+
+INSERT INTO Contratti VALUES(1018,10);
+INSERT INTO Contratti VALUES(1021,10);
+INSERT INTO Contratti VALUES(1019,10);
+
+INSERT INTO Contratti VALUES(1027,11);
+INSERT INTO Contratti VALUES(1028,11);
+
+INSERT INTO Contratti VALUES(1029,12);
+INSERT INTO Contratti VALUES(1030,12);
+INSERT INTO Contratti VALUES(1031,12);
+
+INSERT INTO Contratti VALUES(1009,13);
+INSERT INTO Contratti VALUES(1032,13);
+INSERT INTO Contratti VALUES(1033,13);
+
+INSERT INTO Contratti VALUES(1018,14);
+INSERT INTO Contratti VALUES(1019,14);
+INSERT INTO Contratti VALUES(1020,14);
+INSERT INTO Contratti VALUES(1021,14);
+
+INSERT INTO Contratti VALUES(1034,15);
+INSERT INTO Contratti VALUES(1035,15);
+INSERT INTO Contratti VALUES(1036,15);
+
+INSERT INTO Contratti VALUES(1037,16);
+INSERT INTO Contratti VALUES(1038,16);
+INSERT INTO Contratti VALUES(1039,16);
+
+INSERT INTO Contratti VALUES(1040,17);
+INSERT INTO Contratti VALUES(1007,17);
+INSERT INTO Contratti VALUES(1041,17);
+
+INSERT INTO Contratti VALUES(1042,18);
+INSERT INTO Contratti VALUES(1043,18);
+
+INSERT INTO Contratti VALUES(1044,19);
+INSERT INTO Contratti VALUES(1045,19);
+
+INSERT INTO Contratti VALUES(1028,20);
+INSERT INTO Contratti VALUES(1003,20);
+INSERT INTO Contratti VALUES(1029,20);
+
+INSERT INTO Film VALUES(seq_per_film.NEXTVAL,'Le ali della libertà',142,1);
+INSERT INTO Film VALUES(seq_per_film.NEXTVAL,'Il padrino',175,2);
+INSERT INTO Film VALUES(seq_per_film.NEXTVAL,'Il padrino-Parte II',202,3);
+INSERT INTO Film VALUES(seq_per_film.NEXTVAL,'Il cavaliere oscuro',152,4);
+INSERT INTO Film VALUES(seq_per_film.NEXTVAL,'La parola ai giurati',96,5);
+INSERT INTO Film VALUES(seq_per_film.NEXTVAL,'Schindler''s List',195,6);
+INSERT INTO Film VALUES(seq_per_film.NEXTVAL,'Il Signore degli Anelli - Il ritorno del re',201,7);
+INSERT INTO Film VALUES(seq_per_film.NEXTVAL,'Pulp Fiction',154,8);
+INSERT INTO Film VALUES(seq_per_film.NEXTVAL,'Il buono,il brutto,il cattivo',161,9);
+INSERT INTO Film VALUES(seq_per_film.NEXTVAL,'Il Signore degli Anelli - La compagnia dell''Anello',178,10);
+INSERT INTO Film VALUES(seq_per_film.NEXTVAL,'Fight Club',139,11);
+INSERT INTO Film VALUES(seq_per_film.NEXTVAL,'Forrest Gump',142,12);
+INSERT INTO Film VALUES(seq_per_film.NEXTVAL,'Inception',148,13);
+INSERT INTO Film VALUES(seq_per_film.NEXTVAL,'Il Signore degli Anelli -Le due torri',179,14);
+INSERT INTO Film VALUES(seq_per_film.NEXTVAL,'L''Impero colpisce ancora',124,15);
+INSERT INTO Film VALUES(seq_per_film.NEXTVAL,'Matrix',136,16);
+INSERT INTO Film VALUES(seq_per_film.NEXTVAL,'Quei bravi ragazzi',146,17);
+INSERT INTO Film VALUES(seq_per_film.NEXTVAL,'Qualcuno volò sul nido del cuculo',133,18);
+INSERT INTO Film VALUES(seq_per_film.NEXTVAL,'I sette samurai',207,19);
+INSERT INTO Film VALUES(seq_per_film.NEXTVAL,'Seven',127,20);
+
+INSERT INTO Generi VALUES('Animazione');
+INSERT INTO Generi VALUES('Avventura');
+INSERT INTO Generi VALUES('Azione');
+INSERT INTO Generi VALUES('Biografico');
+INSERT INTO Generi VALUES('Comico');
+INSERT INTO Generi VALUES('Commedia');
+INSERT INTO Generi VALUES('Documentario');
+INSERT INTO Generi VALUES('Drammatico');
+INSERT INTO Generi VALUES('Fantascienza');
+INSERT INTO Generi VALUES('Fantastico');
+INSERT INTO Generi VALUES('Giallo');
+INSERT INTO Generi VALUES('Horror');
+INSERT INTO Generi VALUES('Romantico');
+INSERT INTO Generi VALUES('Splatter');
+INSERT INTO Generi VALUES('Storico');
+INSERT INTO Generi VALUES('Thriller');
+INSERT INTO Generi VALUES('Western');
+
+
+INSERT INTO Award VALUES(seq_per_award.NEXTVAL,'Oscar','Film');
+INSERT INTO Award VALUES(seq_per_award.NEXTVAL,'Oscar','Cast');
+INSERT INTO Award VALUES(seq_per_award.NEXTVAL,'Golden Globes','Film');
+INSERT INTO Award VALUES(seq_per_award.NEXTVAL,'Golden Globes','Cast');
+INSERT INTO Award VALUES(seq_per_award.NEXTVAL,'Grammy','Cast');
+INSERT INTO Award VALUES(seq_per_award.NEXTVAL,'Grammy','Film');
+
+
+INSERT INTO Riconoscimenti VALUES(10002,2,9001,1973);
+INSERT INTO Riconoscimenti VALUES(10002,2,9002,1973);
+
+INSERT INTO Riconoscimenti VALUES(10003,3,9001,1974);
+INSERT INTO Riconoscimenti VALUES(10003,3,9002,1974);
+INSERT INTO Riconoscimenti VALUES(10003,3,9005,1974);
+
+INSERT INTO Riconoscimenti VALUES(10004,4,9002,2009);
+INSERT INTO Riconoscimenti VALUES(10004,4,9005,2009);
+
+INSERT INTO Riconoscimenti VALUES(10006,6,9001,1994);
+INSERT INTO Riconoscimenti VALUES(10006,6,9002,1994);
+INSERT INTO Riconoscimenti VALUES(10006,6,9003,1994);
+INSERT INTO Riconoscimenti VALUES(10006,6,9004,1994);
+INSERT INTO Riconoscimenti VALUES(10006,6,9006,1995);
+
+INSERT INTO Riconoscimenti VALUES(10007,7,9001,2004);
+INSERT INTO Riconoscimenti VALUES(10007,7,9002,2004);
+INSERT INTO Riconoscimenti VALUES(10007,7,9003,2004);
+INSERT INTO Riconoscimenti VALUES(10007,7,9004,2004);
+INSERT INTO Riconoscimenti VALUES(10007,7,9005,2005);
+INSERT INTO Riconoscimenti VALUES(10007,7,9006,2005);
+
+
+INSERT INTO Riconoscimenti VALUES(10008,8,9002,1995);
+INSERT INTO Riconoscimenti VALUES(10008,8,9003,1995);
+
+INSERT INTO Riconoscimenti VALUES(10010,10,9001,2002);
+INSERT INTO Riconoscimenti VALUES(10010,10,9002,2002);
+INSERT INTO Riconoscimenti VALUES(10010,10,9005,2003);
+
+INSERT INTO Riconoscimenti VALUES(10012,12,9001,1995);
+INSERT INTO Riconoscimenti VALUES(10012,12,9002,1995);
+INSERT INTO Riconoscimenti VALUES(10012,12,9003,1995);
+INSERT INTO Riconoscimenti VALUES(10012,12,9004,1995);
+
+INSERT INTO Riconoscimenti VALUES(10013,13,9002,2011);
+
+INSERT INTO Riconoscimenti VALUES(10014,14,9002,2003);
+INSERT INTO Riconoscimenti VALUES(10014,14,9005,2004);
+
+
+
+
+INSERT INTO Appartenenze VALUES(10001,'Drammatico');
+INSERT INTO Appartenenze VALUES(10002,'Drammatico');
+INSERT INTO Appartenenze VALUES(10003,'Drammatico');
+INSERT INTO Appartenenze VALUES(10004,'Azione');
+INSERT INTO Appartenenze VALUES(10005,'Drammatico');
+INSERT INTO Appartenenze VALUES(10006,'Biografico');
+INSERT INTO Appartenenze VALUES(10007,'Fantastico');
+INSERT INTO Appartenenze VALUES(10008,'Thriller');
+INSERT INTO Appartenenze VALUES(10009,'Western');
+INSERT INTO Appartenenze VALUES(10010,'Fantastico');
+INSERT INTO Appartenenze VALUES(10011,'Drammatico');
+INSERT INTO Appartenenze VALUES(10012,'Commedia');
+INSERT INTO Appartenenze VALUES(10013,'Fantascienza');
+INSERT INTO Appartenenze VALUES(10014,'Fantastico');
+INSERT INTO Appartenenze VALUES(10015,'Fantascienza');
+INSERT INTO Appartenenze VALUES(10016,'Fantascienza');
+INSERT INTO Appartenenze VALUES(10017,'Biografico');
+INSERT INTO Appartenenze VALUES(10018,'Drammatico');
+INSERT INTO Appartenenze VALUES(10019,'Storico');
+INSERT INTO Appartenenze VALUES(10020,'Thriller');
+
+
+INSERT INTO Studio VALUES(seq_per_studio.NEXTVAL,'Columbia Pictures',1924,'Culver City');
+INSERT INTO Studio VALUES(seq_per_studio.NEXTVAL,'Paramount Pictures',1912,'Los Angeles');
+INSERT INTO Studio VALUES(seq_per_studio.NEXTVAL,'Paramount Pictures',1912,'Los Angeles');
+INSERT INTO Studio VALUES(seq_per_studio.NEXTVAL,'Warner Bros',1923,'Burbank');
+INSERT INTO Studio VALUES(seq_per_studio.NEXTVAL,'United Artists',1919,'Beverly Hills');
+INSERT INTO Studio VALUES(seq_per_studio.NEXTVAL,'Universal Pictures',1912,'Los Angeles');
+INSERT INTO Studio VALUES(seq_per_studio.NEXTVAL,'New Line Cinema',1967,'Los Angeles');
+INSERT INTO Studio VALUES(seq_per_studio.NEXTVAL,'Miramax',1979,'Santa Monica');
+INSERT INTO Studio VALUES(seq_per_studio.NEXTVAL,'P.E.A',1962,DEFAULT);
+INSERT INTO Studio VALUES(seq_per_studio.NEXTVAL,'New Line Cinema',1967,'Los Angeles');
+INSERT INTO Studio VALUES(seq_per_studio.NEXTVAL,'20th Century Studios','1932','Los Angeles');
+INSERT INTO Studio VALUES(seq_per_studio.NEXTVAL,'Paramount Pictures',1912,'Los Angeles');
+INSERT INTO Studio VALUES(seq_per_studio.NEXTVAL,'Syncopy Films',2001,'Los Angeles');
+INSERT INTO Studio VALUES(seq_per_studio.NEXTVAL,'New Line Cinema',1967,'Los Angeles');
+INSERT INTO Studio VALUES(seq_per_studio.NEXTVAL,'Lucasfilm',1971,'San Francisco');
+INSERT INTO Studio VALUES(seq_per_studio.NEXTVAL,'Warner Bros',1923,'Burbank');
+INSERT INTO Studio VALUES(seq_per_studio.NEXTVAL,'Warner Bros',1923,'Burbank');
+INSERT INTO Studio VALUES(seq_per_studio.NEXTVAL,'United Artists',1919,'Beverly Hills');
+INSERT INTO Studio VALUES(seq_per_studio.NEXTVAL,'Toho',1932,'Chiyoda');
+INSERT INTO Studio VALUES(seq_per_studio.NEXTVAL,'New Line Cinema',1967,'Los Angeles');
+
+
+INSERT INTO Produzioni  VALUES(10001,8001,1994);
+INSERT INTO Produzioni  VALUES(10002,8002,1972);
+INSERT INTO Produzioni  VALUES(10003,8003,1974);
+INSERT INTO Produzioni  VALUES(10004,8004,2008);
+INSERT INTO Produzioni  VALUES(10005,8005,1957);
+INSERT INTO Produzioni  VALUES(10006,8006,1993);
+INSERT INTO Produzioni  VALUES(10007,8007,2003);
+INSERT INTO Produzioni  VALUES(10008,8008,1994);
+INSERT INTO Produzioni  VALUES(10009,8009,1966);
+INSERT INTO Produzioni  VALUES(10010,8010,2001);
+INSERT INTO Produzioni  VALUES(10011,8011,1999);
+INSERT INTO Produzioni  VALUES(10012,8012,1994);
+INSERT INTO Produzioni  VALUES(10013,8013,2010);
+INSERT INTO Produzioni  VALUES(10014,8014,2002);
+INSERT INTO Produzioni  VALUES(10015,8015,1980);
+INSERT INTO Produzioni  VALUES(10016,8016,1999);
+INSERT INTO Produzioni  VALUES(10017,8017,1990);
+INSERT INTO Produzioni  VALUES(10018,8018,1975);
+INSERT INTO Produzioni  VALUES(10019,8019,1954);
+INSERT INTO Produzioni  VALUES(10020,8020,1995);
+
+
+INSERT INTO Utenti VALUES('Raff99','Raffaele','Russo','napoli1000@gmail.com','trastevere1000','17-JAN-2018');
+INSERT INTO Utenti VALUES('PeppeCast','Peppe','Castaldo','lucacastaldo@gmail.com','lucca9000','10-FEB-2019');
+INSERT INTO Utenti VALUES('FraLex','Francesco','Leccese','francescoleccese1@live.com','zanzibar81','27-APR-2016');
+INSERT INTO Utenti VALUES('Marione90','Mario','Rossi','mariomarketing@gmail.com','casaridoc','26-SEP-2018');
+INSERT INTO Utenti VALUES('Antonia91','Antonia','Bellini','antoniabellini91@gmail.com','12bellini12','1-MAY-2017');
+INSERT INTO Utenti VALUES('GinaCast','Gina','Castaldo','castaldobiagio@gmail.com','GinaCastaldo-1','8-OCT-2019');
+INSERT INTO Utenti VALUES('Limi7_','Antonio','Lucarelli','lucarellistudio@gmail.com','StudioLucarelli1','18-FEB-2017');
+INSERT INTO Utenti VALUES('Corradwho','Corrado','Verde','corradoverde@outlook.com','Prosciuttocrudo5','2-NOV-2018');
+INSERT INTO Utenti VALUES('cipol83','Alessio','Ambrosino','ambrox2000@live.it','tiamolucia','1-DEC-2017');
+INSERT INTO Utenti VALUES('pacerigmarole','Luca','Astarita','astarita1900@gmail.com','forzanapolisempre','11-JAN-2016');
+INSERT INTO Utenti VALUES('sownderother','Alessandro','Riccitiello','riccitiello71@hotmail.com','lex30lode','1-OCT-2018');
+INSERT INTO Utenti VALUES('kimonodual','Kim','Smith','kimonodual@live.it','alex30ricc','16-OCT-2017');
+INSERT INTO Utenti VALUES('heappolite','Ippolito','Crespi','heappolite_crespi@gmail.com','crespi123456','20-MAR-2020');
+INSERT INTO Utenti VALUES('notehilt','Hilton','Sanders','sandersnote@gmail.com','sandonthebeach1','20-DEC-2019');
+INSERT INTO Utenti VALUES('Amermist','Nelson','Mandela','mandelaamer@gmail.com','nelsmand19','21-FEB-2018');
+INSERT INTO Utenti VALUES('Burkettre','Federica','Dolce','dolcebu45@live.it','lucaforever','2-MAY-2020');
+INSERT INTO Utenti VALUES('Crowebal','Fortuna','Orabona','orabonafortuna@gmail.com','170499orabona','13-MAR-2018');
+INSERT INTO Utenti VALUES('MrBreezeXglossy','Cristina','Manganiello','glossy40@live.it','passwordimpossibile','13-APR-2017');
+INSERT INTO Utenti VALUES('Gabrielle90','Cesare','Cecere','cecere87@gmail.com','gabrilove','15-JUN-2018');
+INSERT INTO Utenti VALUES('Sandvilli','Benedetto','Frascato','frascatosandv@live.it','benedictusfrascatus','5-JUN-2019');
+INSERT INTO Utenti VALUES('MonEditor','Salvatore','Esposito','espositosalvatore@hotmail.com','gomorranelcuore','15-JUL-2017');
+INSERT INTO Utenti VALUES('Visone59','Ferdinando','Antonioli','antonioniferdinando2@gmail.com','napolicampione','17-AUG-2018');
+INSERT INTO Utenti VALUES('Ambrosix','Shaun','Dean','shaundeanmain@gmail.com','ronaldo4ver','17-APR-2019');
+INSERT INTO Utenti VALUES('Lucia900','Federica','Nasti','federicanasti1998@live.it','modeldream','20-FEB-2018');
+INSERT INTO Utenti VALUES('AnnaSpina','Anna','Rodriguez','annarod.marketing@outlook.it','lovingpizza','21-SEP-2017');
+INSERT INTO Utenti VALUES('Kate2001','Marco','Carta','marcocarta28@live.it','icecream29','10-JUN-2017');
+INSERT INTO Utenti VALUES('Leila2000','Leila','Corona','coronaleila90@gmail.com','youtube989','21-JUL-2019');
+INSERT INTO Utenti VALUES ('LexRiccitiello', 'Alessandro', 'Riccitiello', 'riccitielloalessandro99@gmail.com','424433304C', '23-MAR-2016');
+INSERT INTO Utenti VALUES ('travelsvisible', 'Jhon', 'Smith', 'fancylegacy@outlook.com','roadTo15wiN', '12-FEB-2017');
+INSERT INTO Utenti VALUES ('gryffindorsense', 'Finn', 'Jones', 'finnfishfinnish@hotmail.com','sasaProvaprovqa', '15-JAN-2018');
+INSERT INTO Utenti VALUES ('nurseylife', 'Josh', 'Williams', 'joshwilliams.01@gmail.com','catdoggYcatty', '23-MAY-2019');
+INSERT INTO Utenti VALUES ('queenandmathe9', 'Emily', 'Taylor', 'taylorseriessinx@gmail.com','exsSriesiscool', '27-JAN-2020');
+INSERT INTO Utenti VALUES ('egleeagle', 'Gabriele', 'Mirra', 'eglemirrafinanza@outlook.it','KnY3dnDu', '25-JUL-2018');
+INSERT INTO Utenti VALUES ('sense812', 'Andrew', 'Green', 'green.andrew1982@gmail.com','MKTSxTyf', '9-JAN-2018');
+INSERT INTO Utenti VALUES ('clarettspeedy12', 'Carlotta', 'Carrara', 'algebraegeometria1@gmail.com','6EDV38dK', '1-SEP-2017');
+INSERT INTO Utenti VALUES ('oscarharris678', 'Oscar', 'Harris', 'oscardd1@gmail.com','z5E6F5wh', '17-APR-2017');
+INSERT INTO Utenti VALUES ('Ilovemath55', 'Flavia', 'Giannetti', 'analisimatematica1@gmail.com','RepW7KWH', '5-NOV-2017');
+INSERT INTO Utenti VALUES ('crythebest', 'Cristina', 'Musella', 'cris.musella123@gmail.com','494C6f766555', '18-AUG-2016');
+INSERT INTO Utenti VALUES ('noonewillsurv', 'Francis', 'Chiacchio', 'mathanalisys6cfu@gmail.com','RmJHVkHj', '9-OCT-2018');
+INSERT INTO Utenti VALUES ('lemonspoultry', 'Paolo', 'Morra', 'ingpaolomorra@outlook.com','9WbgJxKr', '31-MAR-2019');
+INSERT INTO Utenti VALUES ('kingknight', 'Mark', 'Zuckemberg', 'facebookcommunity@hotmail.com','yQEChSEz', '30-MAY-2020');
+INSERT INTO Utenti VALUES ('science4life', 'Stephen', 'Hawking', 'wormhole2018@gmail.com','hZTX5kNz', '2-APR-2017');
+INSERT INTO Utenti VALUES ('scanforbidden', 'Bianca', 'Stroffolini', 'federico2university@outlook.com','9AThB69J', '28-FEB-2019');
+INSERT INTO Utenti VALUES ('RicciFrank', 'Francesco', 'Riccitiello', 'riccitiello.francesco1926@hotmail.com','nMdCDrQZ', '25-AUG-2017');
+INSERT INTO Utenti VALUES ('FalceMartello', 'Karl', 'Marx', 'karlmarxrussia@outlook.com','nSWggsxr', '3-SEP-2016');
+INSERT INTO Utenti VALUES ('VincMoscato21', 'Vincenzo', 'Moscato', 'vincenzo.moscato@unina.it','qXKguZYw', '11-JUN-2017');
+INSERT INTO Utenti VALUES ('Angchian12', 'Angelo', 'Chainese', 'angelo.chianese@unina.it','sHJk5FWY', '7-JAN-2017');
+INSERT INTO Utenti VALUES ('Smallville19', 'Philip', 'Clarck', 'philipssett@outlook.com','hHWe4zCZ', '18-FEB-2017');
+INSERT INTO Utenti VALUES ('mattdav1983', 'Mattew', 'Davis', 'davisdavinsmattew@hotmail.com','feJPjgGL', '15-JUL-2019');
+INSERT INTO Utenti VALUES ('lofcadi12', 'Samira', 'Carter', 'brokenff15@hotmail.com','Y9EpX979', '26-AUG-2018');
+INSERT INTO Utenti VALUES ('rexsandysdt', 'Sandy', 'Esposito', 'sandy.esposito02@hotmail.com','MD8Dthfz', '13-FEB-2016');
+INSERT INTO Utenti VALUES ('goawaybabe22', 'Ciretta', 'Spadaro', 'Cira.spatoletta@outlook.com','hpXjUFUZ', '17-DEC-2018');
+INSERT INTO Utenti VALUES ('sendmesamples', 'Antonie', 'Konrad', 'djmacherie2009@gmail.com','u3UTmGs4', '22-DEC-2019');
+INSERT INTO Utenti VALUES ('filmlover15', 'James', 'Dixon', 'disonvacumclean600@outlook.com','uXuEteLE', '24-OCT-2020');
+
+
+INSERT INTO Recensioni VALUES(10001,'Visone59',5,'Film meraviglioso,cast eccezionale ');
+INSERT INTO Recensioni VALUES(10001,'oscarharris678',5,'I Don''t want to say any words about this film. Just a perfect 10 ');
+INSERT INTO Recensioni VALUES(10001,'sownderother',4,'The Shawshank Redemption has great performances, extremely well written script and story all leading to a deeply emotional climax! One of the best dramas of all time!');
+INSERT INTO Recensioni VALUES(10001,'FraLex',5,'Simply amazing. The best film of the 90''s ');
+INSERT INTO Recensioni VALUES(10001,'GinaCast',5,'The best story ever told on film');
+INSERT INTO Recensioni VALUES(10001,'Marione90',5,'Busy dying or busy living?');
+INSERT INTO Recensioni VALUES(10001,'cipol83',4,'Vale la pena di essere visto');
+INSERT INTO Recensioni VALUES(10001,'notehilt',3,'Sono l''unico a non avere colto il senso di questo film? ');
+INSERT INTO Recensioni VALUES(10001,'travelsvisible',4,'Great story, wondrously told and acted');
+INSERT INTO Recensioni VALUES(10001,'MonEditor',4,'Enthralling, fantastic, intriguing, truly remarkable!');
+INSERT INTO Recensioni VALUES(10001,'Ambrosix',5,'Mi ha lasciato senza fiato');
+INSERT INTO Recensioni VALUES(10001,'Sandvilli',5,'Stunning film');
+INSERT INTO Recensioni VALUES(10001,'Amermist',4,'Mancato poco alla perfezione');
+INSERT INTO Recensioni VALUES(10001,'Kate2001',3,'Non ha rispettato le aspettative');
+INSERT INTO Recensioni VALUES(10001,'filmlover15',3,'Good , But It Is Overrated By Some');
+INSERT INTO Recensioni VALUES(10002,'goawaybabe22',4,'Da non perdere');
+INSERT INTO Recensioni VALUES(10002,'kingknight',5,'Il film più bello che abbia mai visto,ancora senza parole');
+INSERT INTO Recensioni VALUES(10002,'Antonia91',5,'Un cult , film più bello di semppre');
+INSERT INTO Recensioni VALUES(10002,'Marione90',4,'Quasi perfetto');
+INSERT INTO Recensioni VALUES(10002,'kimonodual',4,'Outstanding');
+INSERT INTO Recensioni VALUES(10002,'Limi7_',5,'Impeccabile');
+INSERT INTO Recensioni VALUES(10002,'sendmesamples',5,'Un must per tutti gli amanti del genere');
+INSERT INTO Recensioni VALUES(10002,'RicciFrank',4,'Un pelo dall perfezione');
+INSERT INTO Recensioni VALUES(10003,'lofcadi12',4,'Grande classico');
+INSERT INTO Recensioni VALUES(10003,'FalceMartello',5,'fantastic');
+INSERT INTO Recensioni VALUES(10003,'VincMoscato21',5,'Capolavoro');
+INSERT INTO Recensioni VALUES(10004,'scanforbidden',5,'Grande classico');
+INSERT INTO Recensioni VALUES(10004,'noonewillsurv',5,'Non ha difetti');
+INSERT INTO Recensioni VALUES(10004,'goawaybabe22',4,'Great story, wondrously told and acted');
+INSERT INTO Recensioni VALUES(10004,'Limi7_',5,'Penso non bastino 10 visioni per coglierne tutte le sfumature');
+INSERT INTO Recensioni VALUES(10004,'Marione90',2,'Non ha rispettato le aspettative');
+INSERT INTO Recensioni VALUES(10004,'Raff99',5,'Da rivedere e rivedere ');
+INSERT INTO Recensioni VALUES(10004,'sownderother',4,'Great story, wondrously told and acted');
+INSERT INTO Recensioni VALUES(10005,'travelsvisible',4,'Trama ben strutturata');
+INSERT INTO Recensioni VALUES(10005,'science4life',5,'Cast perfetto,scene mozzafiato');
+INSERT INTO Recensioni VALUES(10005,'lemonspoultry',4,'Trama intricata');
+INSERT INTO Recensioni VALUES(10005,'Raff99',5,'Trama interessante,cast perfetto');
+INSERT INTO Recensioni VALUES(10005,'Limi7_',3,'Film mediocre');
+INSERT INTO Recensioni VALUES(10005,'scanforbidden',4,'Grande film,mancato poco alla perfezione');
+INSERT INTO Recensioni VALUES(10005,'kingknight',3,'Nella media');
+INSERT INTO Recensioni VALUES(10006,'goawaybabe22',4,'Da non perdere');
+INSERT INTO Recensioni VALUES(10006,'Angchian12',4,'Grande classico');
+INSERT INTO Recensioni VALUES(10006,'rexsandysdt',5,'Great story, wondrously told and acted');
+INSERT INTO Recensioni VALUES(10006,'Smallville19',5,'Eccezionale');
+INSERT INTO Recensioni VALUES(10007,'mattdav1983',2,'Deludente');
+INSERT INTO Recensioni VALUES(10007,'oscarharris678',4,'Ottim film');
+INSERT INTO Recensioni VALUES(10007,'pacerigmarole',4,'Trama interessante,cast perfetto');
+INSERT INTO Recensioni VALUES(10007,'heappolite',5,'Grande storia');
+INSERT INTO Recensioni VALUES(10007,'Lucia900',3,'Mediocre a dir poco');
+INSERT INTO Recensioni VALUES(10008,'AnnaSpina',5,'Da rivedere');
+INSERT INTO Recensioni VALUES(10008,'MrBreezeXglossy',3,'Non ha rispettato le aspettative');
+INSERT INTO Recensioni VALUES(10009,'Gabrielle90',5,'Impeccabile!');
+INSERT INTO Recensioni VALUES(10009,'Sandvilli',4,'Great story, wondrously told and acted');
+INSERT INTO Recensioni VALUES(10009,'travelsvisible',5,'Grande storia');
+INSERT INTO Recensioni VALUES(10009,'Raff99',2,'Senza parole,in negativo');
+INSERT INTO Recensioni VALUES(10010,'Marione90',1,'Non ha rispettato le aspettative');
+INSERT INTO Recensioni VALUES(10010,'queenandmathe9',5,'Impeccabile');
+INSERT INTO Recensioni VALUES(10010,'nurseylife',3,'Non mi ha convinto ');
+INSERT INTO Recensioni VALUES(10010,'egleeagle',4,'Sono rimasto sconvolto,da vedere');
+INSERT INTO Recensioni VALUES(10010,'gryffindorsense',5,'Flawless');
+INSERT INTO Recensioni VALUES (10011, 'lofcadi12', 5, 'If you like movies with intelligent plot twists you should see this...Actually, if you like movies (any genre) you should see this because it is a masterpiece.. ');
+INSERT INTO Recensioni VALUES (10011, 'sense812', 5, 'Simply ground breaking story, music and action it is my favourite film watched ever');
+INSERT INTO Recensioni VALUES (10011, 'Ilovemath55', 5, 'So rewatchable. The acting is amazing, the story is amazing the second time you watch it, very good acting, funny as well sometimes. Great movie.');
+INSERT INTO Recensioni VALUES (10011, 'Leila2000', 5, 'I just can not stop enjoying it. I saw so much of myself in this movie.');
+INSERT INTO Recensioni VALUES (10011, 'sendmesamples', 5, 'The movie shows us a perspective of the people consumed in their daily lives for work ');
+INSERT INTO Recensioni VALUES (10011, 'filmlover15', 5, 'I never get board watching this film. But cannot talk about fight club because there is no fight club.');
+INSERT INTO Recensioni VALUES (10011, 'Corradwho', 2, 'Sì, bel film, ma si poteva fare di meglio, regia scarna, scene confusionarie, due stelle e sono stato buono.');
+INSERT INTO Recensioni VALUES (10011, 'Raff99', 3, 'Senza lodi e senza infamie, non lo riguarderei');
+INSERT INTO Recensioni VALUES (10011, 'Amermist', 2, 'Bocciato, non mi ha lasciato nulla, noioso, mi stavo per addormentare');
+INSERT INTO Recensioni VALUES (10011, 'Visone59', 4, 'Per nulla male, uno dei migliori film che abbia mai visto, ma ci sta  qualcosa che non va, non posso lasciare più di 4 stelle');
+INSERT INTO Recensioni VALUES (10012, 'AnnaSpina', 4, 'Wow, davvero un film molto gradevole, aprrezzato tantissimo');
+INSERT INTO Recensioni VALUES (10012, 'sense812', 5, 'A mio parere è il miglior film della storia, coinvolgente, emozionante, nulla da dire, innamortassimo di questa pellicola');
+INSERT INTO Recensioni VALUES (10012, 'Gabrielle90', 5, 'Senza parole, assurdo');
+INSERT INTO Recensioni VALUES (10012, 'queenandmathe9', 2, 'Senza parole, pessimo');
+INSERT INTO Recensioni VALUES (10012, 'pacerigmarole', 1, 'A mio parere è il peggior film della storia, per nulla coinvolgente o emozionante. Nulla da dire, disprezzo totale per questa pellicola');
+INSERT INTO Recensioni VALUES (10012, 'MonEditor', 1, 'Dico solo una cosa: stavo per addormentarmi per la noia.');
+INSERT INTO Recensioni VALUES (10012, 'Crowebal', 5, 'Non riesco a semttere di guardare');
+INSERT INTO Recensioni VALUES (10012, 'Burkettre', 5, 'I cannot stop watch this movie, I love it, 5 stars ');
+INSERT INTO Recensioni VALUES (10012, 'Amermist', 2, 'Bocciato, non mi ha lasciato nulla, noioso, mi stavo per addormentare');
+INSERT INTO Recensioni VALUES (10013, 'kimonodual', 4, 'I just can not stop enjoying it. I saw so much of myself in this movie');
+INSERT INTO Recensioni VALUES (10013, 'PeppeCast', 3, 'Senza lodi e senza infamie, non lo riguarderei');
+INSERT INTO Recensioni VALUES (10013, 'Leila2000', 3, 'Film nella media, tanto guardabile quanto noioso, non ho gradito le scelte effettuate dal regista, fotografia mediocre.');
+INSERT INTO Recensioni VALUES (10013, 'clarettspeedy12', 5, 'Senza parole, assurdo');
+INSERT INTO Recensioni VALUES (10013, 'nurseylife', 5, 'I just can not stop enjoying it. I saw so much of myself in this movie');
+INSERT INTO Recensioni VALUES (10013, 'travelsvisible', 5, 'Innamorato del film');
+INSERT INTO Recensioni VALUES (10013, 'filmlover15', 5, 'Lo riguarderei fino alla morte, promossissimo');
+INSERT INTO Recensioni VALUES (10014, 'science4life', 3, 'Senza parole, assurdo');
+INSERT INTO Recensioni VALUES (10014, 'Raff99', 4, 'Film assolutamente da guardare, alcune scelte stilistiche non le ho gradite, complessivamente un bel film');
+INSERT INTO Recensioni VALUES (10014, 'PeppeCast', 3, 'Sì, bel film, ma si poteva fare di meglio, regia scarna, scene confusionarie, tre stelle e sono stato buono');
+INSERT INTO Recensioni VALUES (10014, 'FraLex', 4, 'I just can not stop enjoying it. I saw so much of myself in this movie');
+INSERT INTO Recensioni VALUES (10014, 'Antonia91', 1, 'Senza parole, pessimo');
+INSERT INTO Recensioni VALUES (10014, 'heappolite', 2, 'Bocciato, non mi ha lasciato nulla, noioso, mi stavo per addormentare');
+INSERT INTO Recensioni VALUES (10015, 'Amermist', 5, 'Lo riguarderei fino alla morte, promossissimo');
+INSERT INTO Recensioni VALUES (10015, 'filmlover15', 5, 'Ufilmlover15n film che ha fatto la storia del cinema, consigliatissimo');
+INSERT INTO Recensioni VALUES (10015, 'Sandvilli', 5, 'Senza parole, assurdo');
+INSERT INTO Recensioni VALUES (10015, 'MonEditor', 4, 'Film assolutamente da guardare, alcune scelte stilistiche non le ho gradite, complessivamente un bel film');
+INSERT INTO Recensioni VALUES (10015, 'Ambrosix', 4, 'I just can not stop enjoying it. I saw so much of myself in this movie');
+INSERT INTO Recensioni VALUES (10015, 'cipol83', 3, 'Film nella media, tanto guardabile quanto noioso, non ho gradito le scelte effettuate dal regista, fotografia mediocre.');
+INSERT INTO Recensioni VALUES (10016, 'Corradwho', 3, 'Sì, bel film, ma si poteva fare di meglio, regia scarna, scene confusionarie, tre stelle e sono stato buono');
+INSERT INTO Recensioni VALUES (10016, 'mattdav1983', 5, 'Lo riguarderei fino alla morte, promossissimo');
+INSERT INTO Recensioni VALUES (10016, 'RicciFrank', 5, 'All time favourite movie...i always watch this movie at free time..... recommended to everyone who loves best films');
+INSERT INTO Recensioni VALUES (10016, 'filmlover15', 5, 'I cannot stop watch this movie, I love it, 5 stars ');
+INSERT INTO Recensioni VALUES (10016, 'goawaybabe22', 5, 'Senza parole, assurdo');
+INSERT INTO Recensioni VALUES (10016, 'gryffindorsense', 5, 'Innamorata del film');
+INSERT INTO Recensioni VALUES (10017, 'FalceMartello', 5, 'Senza parole, assurdo');
+INSERT INTO Recensioni VALUES (10017, 'Angchian12', 5, 'All time favourite movie...i always watch this movie at free time..... recommended to everyone who loves best films');
+INSERT INTO Recensioni VALUES (10017, 'lofcadi12', 5, 'I just can not stop enjoying it. I saw so much of myself in this movie');
+INSERT INTO Recensioni VALUES (10017, 'rexsandysdt', 2, 'Senza parole, pessimo');
+INSERT INTO Recensioni VALUES (10018, 'goawaybabe22', 3, 'Senza lodi e senza infamie, non lo riguarderei');
+INSERT INTO Recensioni VALUES (10018, 'filmlover15', 2, 'Bocciato, non mi ha lasciato nulla, noioso, mi stavo per addormentare');
+INSERT INTO Recensioni VALUES (10018, 'sendmesamples', 4, 'All time favourite movie...i always watch this movie at free time..... recommended to everyone who loves best films');
+INSERT INTO Recensioni VALUES (10019, 'Raff99', 4, 'Film assolutamente da guardare, alcune scelte stilistiche non le ho gradite, complessivamente un bel film');
+INSERT INTO Recensioni VALUES (10019, 'Marione90', 5, 'I just can not stop enjoying it. I saw so much of myself in this movie');
+INSERT INTO Recensioni VALUES (10019, 'FraLex', 3, 'Film nella media, tanto guardabile quanto noioso, non ho gradito le scelte effettuate dal regista, fotografia mediocre.');
+INSERT INTO Recensioni VALUES (10019, 'VincMoscato21', 5, 'Lo riguarderei fino alla morte, promossissimo');
+INSERT INTO Recensioni VALUES (10019, 'kingknight', 5, 'Innamorata del film');
+INSERT INTO Recensioni VALUES (10019, 'Leila2000', 5, 'Senza parole, assurdo');
+INSERT INTO Recensioni VALUES (10019, 'crythebest', 5, 'I just can not stop enjoying it. I saw so much of myself in this movie');
+INSERT INTO Recensioni VALUES (10019, 'queenandmathe9', 5, 'All time favourite movie...i always watch this movie at free time..... recommended to everyone who loves best films');
+INSERT INTO Recensioni VALUES (10019, 'egleeagle', 2, 'Senza parole, pessimo');
+INSERT INTO Recensioni VALUES (10019, 'Smallville19', 1, 'Bocciato, non mi ha lasciato nulla, noioso, mi stavo per addormentare');
+INSERT INTO Recensioni VALUES (10020, 'goawaybabe22', 2, 'Sì, bel film, ma si poteva fare di meglio, regia scarna, scene confusionarie, due stelle e sono stato buono');
+INSERT INTO Recensioni VALUES (10020, 'rexsandysdt', 4, 'I just can not stop enjoying it. I saw so much of myself in this movie');
+INSERT INTO Recensioni VALUES (10020, 'Leila2000', 4, 'I cannot stop watch this movie, I love it, 4 stars ');
+INSERT INTO Recensioni VALUES (10020, 'sense812', 5, 'All time favourite movie...i always watch this movie at free time..... recommended to everyone who loves best films');

@@ -1,0 +1,40 @@
+
+ALTER TABLE Contratti DROP CONSTRAINT fk_contratti_persone;
+ALTER TABLE Contratti DROP CONSTRAINT fk_contratti_cast;
+ALTER TABLE Riconoscimenti DROP CONSTRAINT fk_riconoscimenti_film;
+ALTER TABLE Riconoscimenti DROP CONSTRAINT fk_riconoscimenti_award;
+ALTER TABLE Riconoscimenti DROP CONSTRAINT fk_riconoscimenti_cast;
+ALTER TABLE Produzioni DROP CONSTRAINT fk_produzioni_film;
+ALTER TABLE Produzioni DROP CONSTRAINT fk_produzioni_studio;
+ALTER TABLE Appartenenze DROP CONSTRAINT fk_appartenenze_film;
+ALTER TABLE Appartenenze DROP CONSTRAINT fk_appartenenze_generi;
+ALTER TABLE Recensioni DROP CONSTRAINT fk_recensioni_film;
+ALTER TABLE Recensioni DROP CONSTRAINT fk_recensioni_utenti;
+ALTER TABLE Film DROP CONSTRAINT fk_film_cast;
+
+DROP VIEW VistaUtenti;
+DROP VIEW VistaRiconoscimenti;
+DROP VIEW VistaGeneriFilm ;
+Drop VIEW VistaProduzioni;
+Drop VIEW VistaRecensioni;
+
+DROP TABLE Contratti;
+DROP TABLE Produzioni;
+DROP TABLE Appartenenze;
+DROP TABLE Recensioni;
+DROP TABLE Persone;
+DROP TABLE Riconoscimenti;
+DROP TABLE Film;
+DROP TABLE Cast;
+DROP TABLE Award;
+DROP TABLE Studio;
+DROP TABLE Generi;
+DROP TABLE Utenti;
+DROP TABLE Classifica;
+DROP SEQUENCE seq_per_persone;
+DROP SEQUENCE seq_per_cast;
+DROP SEQUENCE seq_per_award;
+DROP SEQUENCE seq_per_film;
+DROP SEQUENCE seq_per_studio;
+DROP SEQUENCE seq_per_utenti;
+DROP PACKAGE MoviePackage;

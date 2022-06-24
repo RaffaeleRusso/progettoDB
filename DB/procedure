@@ -1,0 +1,192 @@
+CREATE OR REPLACE PROCEDURE  SearchFilmByCast(name IN   varchar,surname IN  varchar)
+IS
+CURSOR cursore IS SELECT F.Titolo
+FROM Film F JOIN (
+      Cast C JOIN (
+          Contratti Co JOIN Persone P
+          ON P.ID_Persona=Co.Persona
+      )ON Co.Cast=C.ID_Cast
+)ON F.Cast = C.ID_Cast
+WHERE  P.Nome LIKE '%'||name||'%' AND P.Cognome LIKE '%'||surname||'%' ;
+var_film cursore%ROWTYPE;
+
+
+BEGIN
+OPEN cursore;
+
+
+LOOP
+        FETCH cursore INTO var_film;
+        EXIT WHEN cursore%NOTFOUND ;
+        DBMS_OUTPUT.PUT_LINE('Titolo:' ||var_film.Titolo ||CHR(10) );
+
+END LOOP;
+
+CLOSE cursore;
+END;
+
+
+-------------------------------------------------------------------------------
+
+
+CREATE OR REPLACE PROCEDURE  SearchFilmByTitolo(title IN   varchar)
+IS
+CURSOR cursore IS SELECT F.Titolo,F.Durata,P.AnnoRilascio,S.Nome
+FROM Film F JOIN (
+    Produzioni P JOIN Studio S
+    ON P.Studio=S.ID_Studio)
+ON F.ID_Film=P.Film
+WHERE  F.Titolo LIKE '%'||title||'%';
+var_record cursore%ROWTYPE;
+
+
+BEGIN
+OPEN cursore;
+LOOP
+        FETCH cursore INTO var_record;
+        EXIT WHEN cursore%NOTFOUND ;
+        DBMS_OUTPUT.PUT_LINE('Titolo:' ||var_record.Titolo) ;
+        DBMS_OUTPUT.PUT_LINE('Durata:' ||var_record.Durata||' minuti');
+        DBMS_OUTPUT.PUT_LINE('Anno di rilascio:' ||var_record.AnnoRilascio);
+        DBMS_OUTPUT.PUT_LINE('Studio:' ||var_record.Nome ||CHR(10) );
+END LOOP;
+
+CLOSE cursore;
+END;
+
+
+
+-------------------------------------------------------------------------------
+
+CREATE OR REPLACE PROCEDURE  SearchFilmByGenere(genre IN   varchar)
+IS
+CURSOR cursore IS SELECT F.Titolo,F.Durata,A.Genere
+FROM Film F JOIN   Appartenenze A ON F.ID_Film=A.Film
+WHERE  A.Genere LIKE genre;
+
+var_record cursore%ROWTYPE;
+
+
+BEGIN
+OPEN cursore;
+LOOP
+        FETCH cursore INTO var_record;
+        EXIT WHEN cursore%NOTFOUND ;
+        DBMS_OUTPUT.PUT_LINE('Titolo:' ||var_record.Titolo) ;
+        DBMS_OUTPUT.PUT_LINE('Durata:' ||var_record.Durata||' minuti');
+        DBMS_OUTPUT.PUT_LINE('Genere:' ||var_record.Genere ||CHR(10) );
+END LOOP;
+
+CLOSE cursore;
+END;
+
+
+
+
+
+CREATE OR REPLACE PROCEDURE SearchAwardedFilmsByYear( year_ IN NUMBER )
+IS
+x INT :=0;
+
+CURSOR cursore IS
+SELECT F.Titolo,count(R.Film) AS AwardsVinti
+FROM Film F JOIN Riconoscimenti R
+ON F.ID_Film=R.Film
+GROUP BY F.Titolo,R.Anno
+HAVING  R.Anno=year_;
+
+var_record cursore%ROWTYPE;
+
+BEGIN
+
+FOR var_record IN cursore
+LOOP
+    EXIT WHEN cursore%NOTFOUND;
+    DBMS_OUTPUT.PUT_LINE('Titolo: '||var_record.Titolo);
+    DBMS_OUTPUT.PUT_LINE('Awards vinti: '||var_record.AwardsVinti||CHR(10));
+    x:= x + 1;
+END LOOP;
+IF(x=0) THEN RAISE_APPLICATION_ERROR(-20000,'Nessun film trovato');
+END IF ;
+END;
+
+
+
+CREATE OR REPLACE PROCEDURE OrderFilmByDate
+IS
+
+BEGIN
+
+FOR var_record IN(
+SELECT F.Titolo,P.AnnoRilascio
+FROM Film F JOIN Produzioni P
+ON F.ID_Film=P.Film
+ORDER BY P.AnnoRilascio
+)
+LOOP
+EXIT WHEN SQL%NOTFOUND;
+
+DBMS_OUTPUT.PUT_LINE('Titolo: '|| var_record.Titolo);
+DBMS_OUTPUT.PUT_LINE('Anno di rilascio: '|| var_record.AnnoRilascio || chr(10));
+
+
+END LOOP;
+
+END;
+
+-------------------------------------------------------------------------------
+
+CREATE OR REPLACE PROCEDURE VisualizzaRecensioniFilm(Title IN VARCHAR)
+IS
+
+CURSOR cursore IS
+SELECT F.Titolo,R.Commento,R.Stelle,R.Utente
+FROM Recensioni R JOIN Film F
+ON R.Film=F.ID_Film
+WHERE F.Titolo LIKE Title
+ORDER BY R.Stelle DESC;
+var_record cursore%ROWTYPE;
+
+BEGIN
+OPEN cursore;
+LOOP
+FETCH cursore INTO var_record;
+EXIT WHEN cursore%NOTFOUND;
+DBMS_OUTPUT.PUT_LINE('Utente: '||var_record.Utente||CHR(9)||'Stelle: '|| var_record.Stelle );
+DBMS_OUTPUT.PUT_LINE(var_record.Commento|| CHR(10) );
+
+
+END LOOP;
+CLOSE cursore;
+END;
+
+
+------------------------------------------------------------------------------
+
+CREATE OR REPLACE PROCEDURE VisualizzaClassifica
+IS
+x INT :=1;
+CURSOR cursore IS SELECT
+F.Titolo,C.Valutazione ,C.NumeroRecensioni
+FROM Film F JOIN Classifica C
+ON F.ID_Film=C.Film
+ORDER BY C.Valutazione DESC,C.NumeroRecensioni DESC;
+
+var_ cursore%ROWTYPE;
+
+BEGIN
+OPEN cursore;
+
+LOOP
+FETCH cursore INTO var_;
+EXIT WHEN cursore%NOTFOUND;
+DBMS_OUTPUT.PUT_LINE(x || '°');
+DBMS_OUTPUT.PUT_LINE('Titolo: ' || var_.Titolo);
+DBMS_OUTPUT.PUT_LINE('Valutazione Media: ' || var_.Valutazione||chr(9)|| 'Numero Recensioni: '||var_.NumeroRecensioni||CHR(10));
+x:=x+1;
+
+
+
+END LOOP;
+CLOSE cursore;
+END;

@@ -1,0 +1,154 @@
+
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Frank','Darabont','28-JAN-1959','FRANCIA','Regista'); --1001
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Tim','Robbins','16-OCT-1958','USA','Attore');  --1002
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Morgan','Freeman','1-JUN-1937','USA','Attore'); --1003
+
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Francis','Ford Coppola','7-APR-1939','USA','Regista'); --1004
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Marlon','Brando','3-APR-1924','USA','Attore'); --1005
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'AL','Pacino','25-APR-1940','USA','Attore'); --1006
+
+/*INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Francis','Ford Coppola','7-APR-1939','USA','Regista');*/ --1004
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Robert','De Niro','17-AUG-1943','USA','Attore');--1007
+/*INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'AL','Pacino','25-APR-1940','USA','Attore');*/--1006
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Robert','Duvall','5-JAN-1931','USA','Attore');--1008
+
+
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Christopher','Nolan','30-JUL-1970','UK','Regista');--1009
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Christian','Bale','30-JAN-1974','UK','Attore');--1010
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Heath','Ledger','4-APR-1979','Australia','Attore');--1011
+
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Sidney','Lumet','25-JUN-1924','USA','Regista'); --1012
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Henry','Fonda','16-MAY-1905','USA','Attore'); --1013
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Martin','Balsam','4-NOV-1919','Australia','Attore');--1014
+
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Steven','Spielberg','18-DEC-1946','USA','Regista');--1015
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Liam','Neeson','7-JAN-1952','UK','Attore');--1016
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Ralph','Fiennes','22-DEC-1962','UK','Attore');--1017
+
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Peter','Jackson','31-OCT-1961','Nuova Zelanda','Regista'); --1018
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Elijah','Wood','28-JAN-1981','USA','Attore'); --1019
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Viggo','Mortensen','20-OCT-1958','USA','Attore'); --1020
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Ian','McKellen','25-mat-1939,'UK','Attore'); --1021
+
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Quentin','Tarantino','27-MAR-1963','USA','Regista');--1022
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'John','Travolta','18-FEB-1954','USA','Attore');--1023
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Uma','Thurman','29-APR-1970','USA','Attore');--1024
+
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Sergio','Leone','3-JAN-1929','Italia','Regista');--1025
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Clint','Eastwood','31-MAR-1930','USA','Attore');--1026
+
+/*INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Peter','Jackson','31-OCT-1961','Nuova Zelanda','Regista');--1018
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Elijah','Wood','28-JAN-1981','USA','Attore');--1027
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Ian','McKellen','25-mat-1939,'UK','Attore');*/--1021
+
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'David','Fincher','28-AUG-1962','USA','Regista');--1028
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Brad','Pitt','18-DEC-1963','USA','Attore');--1029
+
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Robert','Zemeckis','14-MAY-1951','USA','Regista');--1030
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Tom','Hanks','9-JUL-1956','USA','Attore');--1031
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Robin','Wright','8-APR-1966','USA','Attore');--1032
+
+/*INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Christopher','Nolan','30-JUL-1970','UK','Regista');*/--1009
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Leonardo','DiCaprio','11-NOV-1974','UK','Attore');--1033
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Joseph','Gordon','17-FEB-1981','Australia','Attore');--1034
+
+/*INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Peter','Jackson','31-OCT-1961','Nuova Zelanda','Regista');--1018
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Elijah','Wood','28-JAN-1981','USA','Attore');--1019
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Viggo','Mortensen','20-OCT-1958','USA','Attore');--1020
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Ian','McKellen','25-mat-1939,'UK','Attore');*/--1021
+
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Irvin','Kershner','29-APR-1923','Nuova Zelanda','Regista');--1035
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Mark','Hamil','25-SEP-1951','USA','Attore');--1036
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Harrison','Ford','13-JUL-1942','USA','Attore');--1037
+
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Lana','Wachowski','21-JUN-1965','Nuova Zelanda','Regista');--1038
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Keanu','Reeves','2-SEP-1964','Libano','Attore');--1039
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Laurence','Fishburne','30-JUL-1961','USA','Attore');--1040
+
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Martin','Scorsese','17-NOV-1942','USA','Regista');--1041
+/*INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Robert','De Niro','17-AUG-1943','USA','Attore');*/--1007
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Ray','Liotta','18-DEC-1954','USA','Attore');--1042
+
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Milos','Forman','18-FEB-1932','Repubblica Ceca','Regista');--1043
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Jack','Nicholson','22-APR-1937','USA','Attore');--1044
+
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Akira','Kurosawa','23-MAR-1910','Giappone','Regista');--1045
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Takashi','Shimura','12-MAR-1905','Giappone','Attore');--1046
+
+/*INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'David','Fincher','28-AUG-1962','USA','Regista');*/--1028
+/*INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Morgan','Freeman','1-JUN-1937','USA','Attore');*/--1003
+/*INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Brad','Pitt','18-DEC-1963','USA','Attore');*/--1029
+
+
+
+
+------UNCOMMENTED VERSION--------
+
+
+
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Frank','Darabont','28-JAN-1959','Francia','Regista');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Tim','Robbins','16-OCT-1958','USA','Attore');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Morgan','Freeman','1-JUN-1937','USA','Attore');
+
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Francis','Ford Coppola','7-APR-1939','USA','Regista');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Marlon','Brando','3-APR-1924','USA','Attore');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'AL','Pacino','25-APR-1940','USA','Attore');
+
+
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Robert','De Niro','17-AUG-1943','USA','Attore');
+
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Robert','Duvall','5-JAN-1931','USA','Attore');
+
+
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Christopher','Nolan','30-JUL-1970','UK','Regista');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Christian','Bale','30-JAN-1974','UK','Attore');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Heath','Ledger','4-APR-1979','Australia','Attore');
+
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Sidney','Lumet','25-JUN-1924','USA','Regista');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Henry','Fonda','16-MAY-1905','USA','Attore');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Martin','Balsam','4-NOV-1919','Australia','Attore');
+
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Steven','Spielberg','18-DEC-1946','USA','Regista');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Liam','Neeson','7-JAN-1952','UK','Attore');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Ralph','Fiennes','22-DEC-1962','UK','Attore');
+
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Peter','Jackson','31-OCT-1961','Nuova Zelanda','Regista');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Elijah','Wood','28-JAN-1981','USA','Attore');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Viggo','Mortensen','20-OCT-1958','USA','Attore');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Ian','McKellen','25-MAR-1939','UK','Attore');
+
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Quentin','Tarantino','27-MAR-1963','USA','Regista');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'John','Travolta','18-FEB-1954','USA','Attore');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Uma','Thurman','29-APR-1970','USA','Attore');
+
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Sergio','Leone','3-JAN-1929','Italia','Regista');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Clint','Eastwood','31-MAR-1930','USA','Attore');
+
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'David','Fincher','28-AUG-1962','USA','Regista');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Brad','Pitt','18-DEC-1963','USA','Attore');
+
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Robert','Zemeckis','14-MAY-1951','USA','Regista');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Tom','Hanks','9-JUL-1956','USA','Attore');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Robin','Wright','8-APR-1966','USA','Attore');
+
+
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Leonardo','DiCaprio','11-NOV-1974','UK','Attore');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Joseph','Gordon','17-FEB-1981','Australia','Attore');
+
+
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Irvin','Kershner','29-APR-1923','Nuova Zelanda','Regista');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Mark','Hamil','25-SEP-1951','USA','Attore');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Harrison','Ford','13-JUL-1942','USA','Attore');
+
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Lana','Wachowski','21-JUN-1965','Nuova Zelanda','Regista');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Keanu','Reeves','2-SEP-1964','Libano','Attore');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Laurence','Fishburne','30-JUL-1961','USA','Attore');
+
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Martin','Scorsese','17-NOV-1942','USA','Regista');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Ray','Liotta','18-DEC-1954','USA','Attore');
+
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Milos','Forman','18-FEB-1932','Repubblica Ceca','Regista');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Jack','Nicholson','22-APR-1937','USA','Attore');
+
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Akira','Kurosawa','23-MAR-1910','Giappone','Regista');
+INSERT INTO Persone VALUES(seq_per_persone.NEXTVAL,'Takashi','Shimura','12-MAR-1905','Giappone','Attore');
